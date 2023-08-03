@@ -97,16 +97,16 @@ give_player_model_override( entity_num )
 	switch( entity_num )
 	{
 		case 0:
-			character\c_usa_marine1_dlc5::main();// Dempsey
+			character\c_usa_marine1_dlc5::main();
 			break;
 		case 1:
-			character\c_usa_marine2_dlc5::main();// John
+			character\c_usa_marine2_dlc5::main();
 			break;
 		case 2:
-			character\c_usa_marine3_dlc5::main();// Smokey
+			character\c_usa_marine3_dlc5::main();
 			break;
 		case 3:
-			character\c_usa_marine4_dlc5::main();// Marine4
+			character\c_usa_marine4_dlc5::main();
 			break;	
 	}
 }
@@ -767,10 +767,6 @@ check_solo_game()
 		flag_set( "solo_game" );
 		level.solo_lives_given = 0;
 		players[0].lives = 0;
-		if(level.gamemode == "survival")
-		{
-			players[0].lives = 3;
-		}
 	}
 }
 //*****************************************************************************

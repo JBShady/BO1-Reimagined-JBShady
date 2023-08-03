@@ -64,12 +64,12 @@ perk_hack(hacker)
 	hacker notify(self.perk.script_noteworthy + "_stop");
 	hacker playsoundtoplayer( "evt_perk_throwup", hacker );
 
-	/*if ( isdefined( hacker.perk_hud ) )
+	if ( isdefined( hacker.perk_hud ) )
 	{
 		keys = getarraykeys( hacker.perk_hud );
 		for ( i = 0; i < hacker.perk_hud.size; i++ )
 		{
 			hacker.perk_hud[ keys[i] ].x = i * 30;
 		}
-	}*/
+	}
 }

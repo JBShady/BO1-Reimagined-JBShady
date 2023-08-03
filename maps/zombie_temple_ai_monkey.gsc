@@ -1029,16 +1029,18 @@ _monkey_zombieTempleEscapeDeathCallback()
 		//Special bonus if you kill the monkey before he hits you
 		isFavoriteEnemy = isDefined(self.favoriteenemy) && self.favoriteenemy == self.attacker;
 		noMeleeHits = !isdefined(self.melee_count) || self.melee_count==0;
-		/*if( is_true(self.attacking_player) && noMeleeHits && isFavoriteEnemy )
+		if( is_true(self.attacking_player) && noMeleeHits && isFavoriteEnemy )
 		{
 			self.attacker maps\_zombiemode_score::player_add_points( "thundergun_fling", 500, (0,0,0), false );
-		}*/
-
-		if(!is_true(self.nuked) && !is_true(self.trap_death))
-		{
-			self.attacker maps\_zombiemode_score::player_add_points( "damage" );
 		}
 	}
+
+	//Reward death points
+	if(isDefined(self.attacker) && isPlayer(self.attacker))
+	{	//Do damage event so we only ward 10 points
+		self.attacker maps\_zombiemode_score::player_add_points( "damage" );
+	}
+
 
 	if ( IsDefined(self.powerup) )
 	{

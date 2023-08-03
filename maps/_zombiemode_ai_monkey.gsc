@@ -2998,11 +2998,11 @@ monkey_pack_take_perk()
 			perk_str = perk + "_stop";
 			players[i] notify( perk_str );
 
-			/*if ( flag( "solo_game" ) && perk == "specialty_quickrevive" )
+			if ( flag( "solo_game" ) && perk == "specialty_quickrevive" )
 			{
 				players[i].lives--;
 				level.solo_lives_given--;
-			}*/
+			}
 		}
 	}
 	//iprintln("took perk");
