@@ -1084,63 +1084,40 @@ turn_sleight_on()
 turn_revive_on()
 {
 	machine = getentarray("vending_revive", "targetname");
-	/*machine_model = undefined;
+	machine_model = undefined;
 	machine_clip = undefined;
-
-	flag_wait( "all_players_connected" );
-	players = GetPlayers();
-	if ( players.size == 1 || level.vsteams == "ffa" )
-	{
-		for( i = 0; i < machine.size; i++ )
-		{
-			if(IsDefined(machine[i].script_noteworthy) && machine[i].script_noteworthy == "clip")
-			{
-				machine_clip = machine[i];
-			}
-			else // then the model
-			{
-				machine[i] setmodel("zombie_vending_revive_on");
-				machine_model = machine[i];
-			}
-		}
-		wait_network_frame();
-		if ( isdefined( machine_model ) )
-		{
-			machine_model thread revive_solo_fx(machine_clip);
-		}
-	}
-	else
-	{
-		level waittill("revive_on");
-
-		for( i = 0; i < machine.size; i++ )
-		{
-			if(IsDefined(machine[i].classname) && machine[i].classname == "script_model")
-			{
-				machine[i] setmodel("zombie_vending_revive_on");
-				machine[i] playsound("zmb_perks_power_on");
-				machine[i] vibrate((0,-100,0), 0.3, 0.4, 3);
-				machine[i] thread perk_fx( "revive_light" );
-			}
-		}
-
-		level notify( "specialty_quickrevive_power_on" );
-	}*/
-
+	
 	level waittill("revive_on");
+
+	players = GetPlayers();
 
 	for( i = 0; i < machine.size; i++ )
 	{
 		if(IsDefined(machine[i].classname) && machine[i].classname == "script_model")
 		{
-			machine[i] setmodel("zombie_vending_revive_on");
+			//machine[i] setmodel("zombie_vending_revive_on");
 			machine[i] playsound("zmb_perks_power_on");
 			machine[i] vibrate((0,-100,0), 0.3, 0.4, 3);
 			machine[i] thread perk_fx( "revive_light" );
 		}
+		if(IsDefined(machine[i].script_noteworthy) && machine[i].script_noteworthy == "clip")
+		{
+			machine_clip = machine[i];
+		}
+		else // then the model
+		{	
+			machine[i] setmodel("zombie_vending_revive_on");
+			machine_model = machine[i];
+		}
 	}
-
+	wait_network_frame();
+	if ( isdefined( machine_model ) && players.size == 1 )
+	{
+		machine_model thread revive_solo_fx(machine_clip);
+	}
+	
 	level notify( "specialty_quickrevive_power_on" );
+
 }
 
 
@@ -1469,10 +1446,10 @@ vending_trigger_think()
 			flag_set( "solo_game" );
 			level.solo_lives_given = 0;
 			players[0].lives = 0;
-			if(level.gamemode == "survival")
+/*			if(level.gamemode == "survival")
 			{
 				players[0].lives = 3;
-			}
+			}*/
 			level maps\_zombiemode::zombiemode_solo_last_stand_pistol();
 		}
 	}
@@ -1520,7 +1497,7 @@ vending_trigger_think()
 
 	case "specialty_endurance_upgrade":
 	case "specialty_endurance":
-		cost = 2500;
+		cost = 2000;
 		break;
 
 	case "specialty_flakjacket_upgrade":
@@ -1688,7 +1665,7 @@ vending_trigger_think()
 			continue;
 		}
 
-		/*
+		
 		if ( player.num_perks >= 4 && !is_true(player._retain_perks) )
 		{
 			//player iprintln( "Too many perks already to buy Perk: " + perk );
@@ -1697,7 +1674,7 @@ vending_trigger_think()
 			player maps\_zombiemode_audio::create_and_play_dialog( "general", "sigh" );
 			continue;
 		}
-		*/
+		
 
 		sound = "evt_bottle_dispense";
 		playsoundatposition(sound, self.origin);
@@ -1859,9 +1836,9 @@ give_perk( perk, bought )
 	{
 		//AUDIO: Ayers - Sending Perk Name over to audio common script to play VOX
 		self thread maps\_zombiemode_audio::perk_vox( perk );
-		//self setblur( 4, 0.1 );
-		//wait(0.1);
-		//self setblur(0, 0.1);
+		self setblur( 4, 0.1 );
+		wait(0.1);
+		self setblur(0, 0.1);
 		//earthquake (0.4, 0.2, self.origin, 100);
 
 		self notify( "perk_bought", perk );
@@ -1910,7 +1887,7 @@ give_perk( perk, bought )
 
 	// quick revive in solo gives an extra life
 	players = getplayers();
-	/*if ( players.size == 1 && perk == "specialty_quickrevive" )
+	if ( players.size == 1 && perk == "specialty_quickrevive" )
 	{
 		self.lives = 1;
 
@@ -1924,7 +1901,7 @@ give_perk( perk, bought )
 		self thread solo_revive_buy_trigger_move( perk );
 
 		// self disable_trigger();
-	}*/
+	}
 
 	if(perk == "specialty_additionalprimaryweapon")
 	{
@@ -1933,7 +1910,7 @@ give_perk( perk, bought )
 		self thread give_back_additional_weapon();
 		self thread additional_weapon_indicator(perk, perk_str);
 		self thread unsave_additional_weapon_on_bleedout();
-		self thread stowed_weapon_refill();
+		//self thread stowed_weapon_refill();
 	}
 
 
@@ -2164,10 +2141,10 @@ perk_think( perk )
 
 	do_retain = true;
 
-	/*if( get_players().size == 1 && perk == "specialty_quickrevive")
+	if( get_players().size == 1 && perk == "specialty_quickrevive")
 	{
 		do_retain = false;
-	}*/
+	}
 
 	if(do_retain && IsDefined(self._retain_perks) && self._retain_perks)
 	{
@@ -2682,10 +2659,10 @@ lose_random_perk()
 		perk_str = perk + "_stop";
 		self notify( perk_str );
 
-		/*if ( flag( "solo_game" ) && perk == "specialty_quickrevive" )
+		if ( flag( "solo_game" ) && perk == "specialty_quickrevive" )
 		{
 			self.lives--;
-		}*/
+		}
 	}
 }
 
