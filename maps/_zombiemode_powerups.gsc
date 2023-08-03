@@ -82,7 +82,7 @@ init()
 	level.last_powerup = false;
 	level.powerup_overrides = [];
 
-	level thread remove_carpenter();
+	//level thread remove_carpenter();
 	level thread add_powerup_later("fire_sale");
 	level thread add_powerup_later("minigun");
 }
@@ -109,10 +109,10 @@ init_powerups()
 	add_zombie_powerup( "double_points","zombie_x2_icon",	&"ZOMBIE_POWERUP_DOUBLE_POINTS", false, false, false );
 	add_zombie_powerup( "full_ammo",  	"zombie_ammocan",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
 
-	/*if( !level.mutators["mutator_noBoards"] )
+	if( !level.mutators["mutator_noBoards"] )
 	{
 		add_zombie_powerup( "carpenter",  	"zombie_carpenter",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
-	}*/
+	}
 
 	//GZheng - Temp VO
 	//add the correct VO for firesale in the 3rd parameter of this function.
@@ -294,7 +294,7 @@ powerup_hud_overlay()
 			players[p].powerup_hud[i].horzAlign = "user_center";
 			players[p].powerup_hud[i].vertAlign = "user_bottom";
 			players[p].powerup_hud[i].x = 0;
-			players[p].powerup_hud[i].y -= 5; // ww: used to offset by - 78
+			players[p].powerup_hud[i].y -= 25; // ww: used to offset by - 78
 			players[p].powerup_hud[i].alpha = 0.8;
 		}
 
@@ -516,7 +516,7 @@ get_valid_powerup()
 is_valid_powerup(powerup_name)
 {
 	// Carpenter needs 5 destroyed windows
-	if( powerup_name == "carpenter" ) //&& get_num_window_destroyed() < 5
+	if( powerup_name == "carpenter" && get_num_window_destroyed() < 5 ) 
 	{
 		return false;
 	}
@@ -904,14 +904,14 @@ powerup_drop(drop_point, player, zombie)
 
 		if(level.last_powerup)
 		{
-			if(powerup.solo)
+/*			if(powerup.solo)
 			{
 				PlayFX( level._effect["powerup_grabbed_solo"], powerup.origin );
 			}
 			else
 			{
 				PlayFX( level._effect["powerup_grabbed"], powerup.origin );
-			}
+			}*/
 
 			level.last_powerup = false;
 		}
@@ -1936,7 +1936,7 @@ powerup_vo( type )
 	self endon("death");
 	self endon("disconnect");
 
-	wait(randomfloatrange(4.5,5.5));
+	wait(randomfloatrange(2,3));
 
     if( type == "tesla" )
     {
@@ -2111,6 +2111,7 @@ nuke_powerup( drop_item, grabber )
 
  	for (i = 0; i < zombies_nuked.size; i++)
   	{
+ 		wait (randomfloatrange(0.1, 0.7));
  		if( !IsDefined( zombies_nuked[i] ) )
  		{
  			continue;
