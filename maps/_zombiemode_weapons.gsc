@@ -77,7 +77,7 @@ add_zombie_weapon( weapon_name, upgrade_name, hint, cost, weaponVO, weaponVOresp
 		if(weapon_name == "sticky_grenade_zm")
 			ammo_cost = cost;
 		else if(weapon_name == "kar98k_scoped_zombie")
-			ammo_cost = int( cost * 0.25 );
+			ammo_cost = int( cost / 3 );
 		else
 			ammo_cost = round_up_to_ten( int( cost * 0.5 ) );
 	}
@@ -1981,6 +1981,7 @@ treasure_chest_move( player_vox )
 	}
 	else
 	{
+		wait(5);
 		default_box_move_logic();
 	}
 
@@ -2295,8 +2296,12 @@ treasure_chest_lid_close( timedOut )
 	closeTime = 0.5;
 
 	self RotateRoll( closeRoll, closeTime, ( closeTime * 0.5 ) );
-	play_sound_at_pos( "close_chest", self.origin );
 
+	if (!flag("moving_chest_now"))
+	{
+		play_sound_at_pos( "close_chest", self.origin );
+	}
+	
 	self notify("lid_closed");
 }
 
@@ -2310,7 +2315,7 @@ treasure_chest_ChooseRandomWeapon( player )
 
 }
 
-treasure_chest_ChooseWeightedRandomWeapon( player, final_wep, empty )
+/*treasure_chest_ChooseWeightedRandomWeapon( player, final_wep, empty )
 {
 	if(IsDefined(player) && !IsDefined(player.already_got_weapons))
 		player.already_got_weapons = [];
@@ -2347,13 +2352,6 @@ treasure_chest_ChooseWeightedRandomWeapon( player, final_wep, empty )
 		}
 
 		filtered[filtered.size] = keys[i];
-
-		/*num_entries = [[ level.weapon_weighting_funcs[keys[i]] ]]();
-
-		for( j = 0; j < num_entries; j++ )
-		{
-			filtered[filtered.size] = keys[i];
-		}*/
 	}
 
 	// Filter out the limited weapons
@@ -2463,8 +2461,124 @@ treasure_chest_ChooseWeightedRandomWeapon( player, final_wep, empty )
 
 	self.previous_floating_weapon = wep;
 	return wep;
-}
+}*/
 
+treasure_chest_ChooseWeightedRandomWeapon( player )
+{
+	keys = GetArrayKeys( level.zombie_weapons );
+
+	toggle_weapons_in_use = 0;
+	// Filter out any weapons the player already has
+	filtered = [];
+	for( i = 0; i < keys.size; i++ )
+	{
+		if( !get_is_in_box( keys[i] ) )
+		{
+			continue;
+		}
+		
+		if( isdefined( player ) && is_player_valid(player) && player has_weapon_or_upgrade( keys[i] ) )
+		{
+			if ( is_weapon_toggle( keys[i] ) )
+			{
+				toggle_weapons_in_use++;
+			}
+			continue;
+		}
+
+		if( !IsDefined( keys[i] ) )
+		{
+			continue;
+		}
+
+		num_entries = [[ level.weapon_weighting_funcs[keys[i]] ]]();
+		
+		for( j = 0; j < num_entries; j++ )
+		{
+			filtered[filtered.size] = keys[i];
+		}
+	}
+	
+	// Filter out the limited weapons
+	if( IsDefined( level.limited_weapons ) )
+	{
+		keys2 = GetArrayKeys( level.limited_weapons );
+		players = get_players();
+		pap_triggers = GetEntArray("zombie_vending_upgrade", "targetname");
+		for( q = 0; q < keys2.size; q++ )
+		{
+			count = 0;
+			for( i = 0; i < players.size; i++ )
+			{
+				if( players[i] has_weapon_or_upgrade( keys2[q] ) )
+				{
+					count++;
+				}
+			}
+
+			// Check the pack a punch machines to see if they are holding what we're looking for
+			for ( k=0; k<pap_triggers.size; k++ )
+			{
+				if ( IsDefined(pap_triggers[k].current_weapon) && pap_triggers[k].current_weapon == keys2[q] )
+				{
+					count++;
+				}
+			}
+
+			// Check the other boxes so we don't offer something currently being offered during a fire sale
+			for ( chestIndex = 0; chestIndex < level.chests.size; chestIndex++ )
+			{
+				if ( IsDefined( level.chests[chestIndex].chest_origin.weapon_string ) && level.chests[chestIndex].chest_origin.weapon_string == keys2[q] )
+				{
+					count++;
+				}
+			}
+			
+			if ( isdefined( level.random_weapon_powerups ) )
+			{
+				for ( powerupIndex = 0; powerupIndex < level.random_weapon_powerups.size; powerupIndex++ )
+				{
+					if ( IsDefined( level.random_weapon_powerups[powerupIndex] ) && level.random_weapon_powerups[powerupIndex].base_weapon == keys2[q] )
+					{
+						count++;
+					}
+				}
+			}
+
+			if ( is_weapon_toggle( keys2[q] ) )
+			{
+				toggle_weapons_in_use += count;
+			}
+
+			if( count >= level.limited_weapons[keys2[q]] )
+			{
+				filtered = array_remove( filtered, keys2[q] );
+			}
+		}
+	}
+	
+	// finally, filter based on toggle mechanic
+	if ( IsDefined( level.zombie_weapon_toggles ) )
+	{
+		keys2 = GetArrayKeys( level.zombie_weapon_toggles );
+		for( q = 0; q < keys2.size; q++ )
+		{
+			if ( level.zombie_weapon_toggles[keys2[q]].active )
+			{
+				if ( toggle_weapons_in_use < level.zombie_weapon_toggle_max_active_count )
+				{
+					continue;
+				}
+			}
+
+			filtered = array_remove( filtered, keys2[q] );
+		}
+	}
+
+	// try to "force" a little more "real randomness" by randomizing the array before randomly picking a slot in it
+	filtered = array_randomize( filtered );
+	return filtered[RandomInt( filtered.size )];
+}
 // Functions namesake in _zombiemode_weapons.csc must match this one.
 
 weapon_is_dual_wield(name)
@@ -3030,7 +3144,7 @@ timer_til_despawn(floatHeight)
 {
 	self endon("kill_weapon_movement");
 	// SRS 9/3/2008: if we timed out, move the weapon back into the box instead of deleting it
-	putBackTime = 9;
+	putBackTime = 12;
 	self MoveTo( self.origin - ( 0, 0, floatHeight ), putBackTime, ( putBackTime * 0.5 ) );
 	wait( putBackTime );
 
@@ -3154,7 +3268,7 @@ treasure_chest_give_weapon( weapon_string )
 		weapon_string = "knife_ballistic_sickle_zm";
 	}
 
-	if (weapon_string == "tesla_gun_zm" || weapon_string == "thundergun_zm" || weapon_string == "freezegun_zm" || weapon_string == "sniper_explosive_zm" || weapon_string == "humangun_zm" || weapon_string == "shrink_ray_zm" || weapon_string == "microwavegundw_zm")
+	if (weapon_string == "ray_gun_zm" || weapon_string == "tesla_gun_zm" || weapon_string == "thundergun_zm" || weapon_string == "freezegun_zm" || weapon_string == "sniper_explosive_zm" || weapon_string == "humangun_zm" || weapon_string == "shrink_ray_zm" || weapon_string == "microwavegundw_zm")
 	{
 		playsoundatposition("mus_wonder_weapon_stinger", (0,0,0));
 	}
@@ -3492,7 +3606,7 @@ weapon_spawn_think()
 			{
 				if ( player has_upgrade( self.zombie_weapon_upgrade ) )
 				{
-					ammo_cost = 2500;
+					ammo_cost = 4500;
 				}
 				else
 				{
