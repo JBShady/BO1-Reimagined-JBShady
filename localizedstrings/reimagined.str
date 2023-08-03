@@ -31,7 +31,7 @@ REFERENCE           WEAPON_AK74U
 LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy AK74u [Cost: &&1]"
 
 REFERENCE          	MYSTERY_BOX
-LANG_ENGLISH        "Hold ^3[{+activate}]^7 to use Mystery Box [Cost: &&1]"
+LANG_ENGLISH        "Hold ^3[{+activate}]^7 for a Random Weapon [Cost: &&1]"
 
 REFERENCE          	TRADE_EQUIPMENT
 LANG_ENGLISH       	"Hold ^3[{+activate}]^7 to trade Equipment"
@@ -40,7 +40,7 @@ REFERENCE          	BETTY_PICKUP
 LANG_ENGLISH       	"Hold ^3[{+activate}]^7 to Pick Up Bouncing Betty"
 
 REFERENCE          	BETTY_PURCHASE
-LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Bouncing Betty [Cost: 1000]"
+LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Bouncing Betties [Cost: 1000]"
 
 REFERENCE          	PERK_QUICKREVIVE
 LANG_ENGLISH       	"Hold ^3[{+activate}]^7 to buy Quick Revive [Cost: &&1]"
@@ -64,7 +64,7 @@ REFERENCE          	ZIPLINE_DEACTIVATED
 LANG_ENGLISH        "The zipline must be activated before use"
 
 REFERENCE          	TRAP_BRIDGE_EE
-LANG_ENGLISH       	"Why are you trying to activate the trap before the bridge is down?"
+LANG_ENGLISH       	""
 
 REFERENCE          	TRAP_ACTIVE
 LANG_ENGLISH       	"The trap is active"
@@ -82,7 +82,7 @@ REFERENCE          	AUTO_TURRET_COOLDOWN
 LANG_ENGLISH       	"The turret is cooling down"
 
 REFERENCE          	USE_WATER_TRAP
-LANG_ENGLISH       	"Hold ^3[{+activate}]^7 to activate the reservoir [Cost: &&1]"
+LANG_ENGLISH       	"Don't hold ^3[{+activate}]^7 [Cost: &&1]"
 
 REFERENCE          	WATER_TRAP_ACTIVE
 LANG_ENGLISH       	"The reservoir is active"
