@@ -183,7 +183,7 @@ main()
 	maps\zombie_moon_jump_pad::init();	// jump pads
 
 	level thread maps\zombie_moon_gravity::zombie_moon_update_player_gravity();
-	//level thread maps\zombie_moon_gravity::zombie_moon_update_player_float();
+	level thread maps\zombie_moon_gravity::zombie_moon_update_player_float();
 
 	if(level.gamemode == "survival")
 	{
@@ -1106,7 +1106,7 @@ anim_override_func()
 // ------------------------------------------------------------------------------------------------
 include_weapons()
 {
-	//include_weapon( "frag_grenade_zm", false );
+	include_weapon( "frag_grenade_zm", false );
 	include_weapon( "sticky_grenade_zm", false );
 	include_weapon( "claymore_zm", false );
 
@@ -1422,9 +1422,9 @@ gasmask_reset_player_set_viewmodel( entity_num )
 // -- Offhand weapon override for cosmodrome
 moon_offhand_weapon_overrride()
 {
-	//register_lethal_grenade_for_level( "frag_grenade_zm" );
+	register_lethal_grenade_for_level( "frag_grenade_zm" );
 	register_lethal_grenade_for_level( "sticky_grenade_zm" );
-	level.zombie_lethal_grenade_player_init = "sticky_grenade_zm";
+	level.zombie_lethal_grenade_player_init = "frag_grenade_zm";
 
 	register_tactical_grenade_for_level( "zombie_black_hole_bomb" );
 	level.zombie_tactical_grenade_player_init = undefined;
