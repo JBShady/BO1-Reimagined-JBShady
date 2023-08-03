@@ -599,6 +599,8 @@ play_music_easter_egg(player)
 	level.music_override = false;
 	level thread maps\_zombiemode_audio::change_zombie_music( "wave_loop" );
 
+	level waittill ( "between_round_over" );
+
 	level thread toilet_useage();
 }
 

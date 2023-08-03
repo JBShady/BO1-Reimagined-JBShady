@@ -1783,6 +1783,8 @@ play_music_easter_egg(player)
 	level.music_override = false;
 	level thread maps\_zombiemode_audio::change_zombie_music( "wave_loop" );
 
+	level waittill ( "between_round_over" );
+
 	level thread meteor_egg( "meteor_one" );
 	level thread meteor_egg( "meteor_two" );
 	level thread meteor_egg( "meteor_three" );
@@ -1886,11 +1888,11 @@ play_level_easteregg_vox( object )
 	trig UseTriggerRequireLookAt();
 	trig SetCursorHint( "HINT_NOICON" );
 
-	if(object == "vox_corkboard_3")
+/*	if(object == "vox_corkboard_3")
 	{
 		trig disable_trigger();
 		return;
-	}
+	}*/
 
 	while(1)
 	{

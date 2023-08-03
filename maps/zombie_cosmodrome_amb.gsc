@@ -263,6 +263,8 @@ play_music_easter_egg( player )
 	if( level.monkey_intermission == false && level.music_round_override == false )
 	    level thread maps\_zombiemode_audio::change_zombie_music( "wave_loop" );
 
+    level waittill ( "between_round_over" );
+
     level thread setup_teddybear_audio();
 }
 

@@ -562,6 +562,8 @@ play_music_egg( player )
 	if( level.music_round_override == false )
 		level thread maps\_zombiemode_audio::change_zombie_music( "wave_loop" );
 
+	level waittill ( "between_round_over" );
+
 	level thread setup_music_egg();
 }
 //END Music Easter Egg
