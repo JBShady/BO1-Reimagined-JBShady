@@ -107,9 +107,9 @@ loop_local_sound( localClientNum, alias, interval, fx ) // self == the crossbow 
 		realwait(interval);
 		interval = (interval / 1.2);
 
-		if (interval < .05)
+		if (interval < .1)
 		{
-			interval = .05;
+			interval = .1;
 		}
 	}
 }
