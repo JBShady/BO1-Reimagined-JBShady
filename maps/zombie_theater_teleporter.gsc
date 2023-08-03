@@ -50,10 +50,10 @@ teleporter_init()
 		setClientSysState( "levelNotify", "pack_clock_start", players[i] );
 	}
 
-	/*if( !IsSplitscreen() )
+	if( !IsSplitscreen() )
 	{
 		level.teleport_ae_funcs[level.teleport_ae_funcs.size] = maps\zombie_theater_teleporter::teleport_aftereffect_fov;
-	}*/
+	}
 	level.teleport_ae_funcs[level.teleport_ae_funcs.size] = maps\zombie_theater_teleporter::teleport_aftereffect_shellshock;
 	level.teleport_ae_funcs[level.teleport_ae_funcs.size] = maps\zombie_theater_teleporter::teleport_aftereffect_shellshock_electric;
 	level.teleport_ae_funcs[level.teleport_ae_funcs.size] = maps\zombie_theater_teleporter::teleport_aftereffect_bw_vision;
@@ -291,7 +291,7 @@ player_teleporting( index, user )
 	level.extracam_screen Hide();
 	clientnotify("camera_stop");
 
-	if ( randomint( 100 ) > 24 && !IsDefined( level.eeroomsinuse ) && level.radio_egg_counter == 2 && level.gamemode == "survival" ) // ww: chaning the frequency to 75%
+	if ( randomint( 100 ) > 24 && !IsDefined( level.eeroomsinuse ) /*&& level.radio_egg_counter == 2*/ && level.gamemode == "survival" ) // ww: chaning the frequency to 75%
 	{
 		loc = "eerooms";
 		level.eeroomsinuse = true;
@@ -315,7 +315,7 @@ player_teleporting( index, user )
 	// wait a bit
 	wait( level.teleport_delay );
 
-	waited_for_weapon = false;
+/*	waited_for_weapon = false;
 	while(flag("pack_machine_in_use"))
 	{
 		wait .05;
@@ -330,7 +330,7 @@ player_teleporting( index, user )
 		wait .5;
 		for(i=0;i<vending_weapon_upgrade_trigger.size;i++)
 			vending_weapon_upgrade_trigger[i] enable_trigger();
-	}
+	}*/
 
 	// end fps fx
 	self notify( "fx_done" );
@@ -857,13 +857,13 @@ teleport_aftereffects()
 teleport_aftereffect_shellshock()
 {
 	println( "*** Explosion Aftereffect***\n" );
-	self shellshock( "explosion", 1.25 );
+	self shellshock( "explosion", 3 );
 }
 
 teleport_aftereffect_shellshock_electric()
 {
 	println( "***Electric Aftereffect***\n" );
-	self shellshock( "electrocution", 1.25 );
+	self shellshock( "electrocution", 3 );
 }
 
 teleport_aftereffect_fov()
