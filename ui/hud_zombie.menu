@@ -34,13 +34,13 @@
 		name			"weaponinfo_zombie"
 		rect			0 0 0 0 HORIZONTAL_ALIGN_USER_RIGHT VERTICAL_ALIGN_USER_BOTTOM
 		fullScreen		0
-		visible			when( dvarBool( #"ammoCounterHide" ) == 0 && dvarBool( #"hud_missionFailed" ) == 0 && (dvarint( #"zombiemode" ) == 1 && dvarint( #"zombietron" ) == 0) && !dvarInt( #"splitscreen" ) );
+		visible			when( dvarBool( #"ammoCounterHide" ) == 0 && dvarBool( #"hud_missionFailed" ) == 0 && !ui_active() && (dvarint( #"zombiemode" ) == 1 && dvarint( #"zombietron" ) == 0) && !dvarInt( #"splitscreen" ) );
 
 		#define BG_X_START		(WEAPINFO_X-90)
 		#define BG_Y_START		(WEAPINFO_Y+6)
 
 		// background
-		/*itemDef
+		itemDef
 		{
 			type			ITEM_TYPE_OWNERDRAW
             rect			DPAD_BG_X_START_DOUBLED DPAD_BG_Y_START DPAD_BG_WIDTH_DOUBLED DPAD_BG_HEIGHT
@@ -49,7 +49,7 @@
             forecolor		.21 0 0 1
 			visible			1
 			decoration
-        }*/
+        }
 
 		itemDef
 		{
@@ -318,7 +318,7 @@
 			forecolor		1 1 1 1
 			//background	"white"
 			ownerdraw		CG_PLAYER_WEAPON_LOW_AMMO_WARNING
-			visible			when( (dvarInt( #"g_gameskill" ) == 0 || dvarInt( #"g_gameskill" ) == 1 || dvarstring( #"mapname" ) == LEVEL_TRAINING) && dvarBool("hud_lowammowarning") == 1 );
+			visible			when( (dvarInt( #"g_gameskill" ) == 0 || dvarInt( #"g_gameskill" ) == 1 || dvarstring( #"mapname" ) == LEVEL_TRAINING) /*&& dvarBool("hud_lowammowarning") == 1*/ );
 			decoration
 		}
 
@@ -348,7 +348,7 @@
 		name			"DPad_zombie"
  	   	rect			0 0 DPAD_BASE_SIZE DPAD_BASE_SIZE HORIZONTAL_ALIGN_USER_RIGHT VERTICAL_ALIGN_USER_BOTTOM
  	   	fullScreen		0
-		visible			when( dvarBool( #"ammoCounterHide" ) == 0 && dvarBool( #"hud_missionFailed" ) == 0 && dvarBool( #"actionSlotsHide" ) == 0 && (dvarString( #"createfx" ) != "on") && (dvarint( #"zombiemode" ) == 1 && dvarint( #"zombietron" ) == 0) && !dvarInt( #"splitscreen" ) );
+		visible			when( dvarBool( #"ammoCounterHide" ) == 0 && dvarBool( #"hud_missionFailed" ) == 0 && !ui_active() && dvarBool( #"actionSlotsHide" ) == 0 && (dvarString( #"createfx" ) != "on") && (dvarint( #"zombiemode" ) == 1 && dvarint( #"zombietron" ) == 0) && !dvarInt( #"splitscreen" ) );
 
 		// DPAD BACKGROUND
 		itemDef
@@ -610,7 +610,7 @@
 		name			"competitivemodescores"
 		rect			-103 -102 0 0 HORIZONTAL_ALIGN_USER_RIGHT VERTICAL_ALIGN_USER_BOTTOM
 		fullScreen		0
-		visible when 	( dvarBool( #"hud_missionFailed" ) == 0 && (dvarint( #"zombiemode" ) == 1 && dvarint( #"zombietron" ) == 0) && !dvarInt( #"splitscreen" ) );
+		visible when 	( !ui_active() && dvarBool( #"hud_missionFailed" ) == 0 && (dvarint( #"zombiemode" ) == 1 && dvarint( #"zombietron" ) == 0) && !dvarInt( #"splitscreen" ) );
 
 		itemDef
 		{
@@ -627,7 +627,7 @@
 		name			"zombietronscores"
 		rect			0 0 640 480 HORIZONTAL_ALIGN_DEFAULT VERTICAL_ALIGN_DEFAULT
 		fullScreen		0
-		visible when 	( dvarint( #"zombietron" ) == 1 );
+		visible when 	( !ui_active() && dvarint( #"zombietron" ) == 1 );
 
 		itemDef
 		{
