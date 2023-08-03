@@ -468,8 +468,37 @@ quantum_bomb_pack_or_unpack_current_weapon_result( position )
 			continue;
 		}
 
-		if ( isdefined( level.zombie_weapons[weapon].upgrade_name ) )
+		if ( maps\_zombiemode_weapons::is_weapon_upgraded( weapon ) )
 		{
+			if ( RandomInt( 5 ) ) // only 20% chance of losing the packed weapon
+			{
+				continue;
+			}
+
+			ziw_keys = GetArrayKeys( level.zombie_weapons );
+			for ( weaponindex = 0; weaponindex < level.zombie_weapons.size; weaponindex++ )
+			{
+				if ( IsDefined(level.zombie_weapons[ ziw_keys[weaponindex] ].upgrade_name) && 
+					 level.zombie_weapons[ ziw_keys[weaponindex] ].upgrade_name == weapon )
+				{
+					if( player == self )
+					{
+						self thread maps\_zombiemode_audio::create_and_play_dialog( "kill", "quant_bad" );
+					}
+					
+					player thread maps\_zombiemode_weapons::weapon_give( ziw_keys[weaponindex] );
+					player quantum_bomb_play_player_effect();
+					break;
+				}
+			}
+		}
+		else if ( isdefined( level.zombie_weapons[weapon].upgrade_name ) )
+		{
+			if ( !RandomInt( 4 ) ) // 75% chance
+			{
+				continue;
+			}
+
 			weapon_limit = 2;
 			if ( player HasPerk( "specialty_additionalprimaryweapon" ) )
 			{
@@ -482,8 +511,11 @@ quantum_bomb_pack_or_unpack_current_weapon_result( position )
 				// since we're under the weapon limit, weapon_give won't take the current weapon, so we need to do that here ourselves
 				player TakeWeapon( weapon );
 			}
-
-			player thread maps\_zombiemode_audio::create_and_play_dialog( "kill", "quant_good" );
+			
+			if( player == self )
+			{
+				player thread maps\_zombiemode_audio::create_and_play_dialog( "kill", "quant_good" );
+			}
 			player thread maps\_zombiemode_weapons::weapon_give( level.zombie_weapons[weapon].upgrade_name );
 			player quantum_bomb_play_player_effect();
 		}
