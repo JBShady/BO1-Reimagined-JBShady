@@ -453,7 +453,8 @@ Callback_PlayerDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, s
 		self.maxHealth = maxHealth;
 	}
 
-	/*if( isdefined( self.divetoprone ) && self.divetoprone == 1 )
+	// player is diving
+	if( isdefined( self.divetoprone ) && self.divetoprone == 1 )
 	{
 		if( sMeansOfDeath == "MOD_GRENADE_SPLASH" )
 		{
@@ -470,7 +471,7 @@ Callback_PlayerDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, s
 				}
 			}
 		}
-	}*/
+	}
 	println("CB PD");
 
 	if( isdefined( eAttacker ) && ((isPlayer( eAttacker )) && (eAttacker.team == self.team))&& ( !isDefined( level.friendlyexplosivedamage ) || !level.friendlyexplosivedamage ))
@@ -497,13 +498,6 @@ Callback_PlayerDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, s
 				return;
 			}
 		}
-	}
-
-	// Remove shellshock from explosive weapons (using "MOD_MELEE" since it automatically makes players stop sprinting)
-	if(sMeansOfDeath == "MOD_GRENADE_SPLASH" || sMeansOfDeath == "MOD_PROJECTILE_SPLASH")
-	{
-		sMeansOfDeath = "MOD_MELEE"; // TODO - make sure this doesn't have any unintended side effects
-		//self thread stop_running();
 	}
 
 	if ( isdefined(eAttacker) && eAttacker != self )
