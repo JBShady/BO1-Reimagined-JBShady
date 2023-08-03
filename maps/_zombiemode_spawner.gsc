@@ -243,7 +243,7 @@ zombie_spawn_init( animname_set )
 	self.deathFunction = ::zombie_death_animscript;
 	self.flame_damage_time = 0;
 
-	self.meleeDamage = 50;
+	self.meleeDamage = 60;
 	self.no_powerups = true;
 
 	self zombie_history( "zombie_spawn_init -> Spawned = " + self.origin );
@@ -2790,6 +2790,8 @@ zombie_head_gib( attacker, means_of_death, tesla )
 	temp_array = [];
 	temp_array[0] = level._ZOMBIE_GIB_PIECE_INDEX_HEAD;
 	self gib( "normal", temp_array );
+
+	self thread damage_over_time( self.health * 0.2, 1, attacker, means_of_death );
 }
 
 damage_over_time( dmg, delay, attacker, means_of_death )
@@ -2843,7 +2845,7 @@ head_should_gib( attacker, type, point )
 
 	// check the enemy's health
 	low_health_percent = ( self.health / self.maxhealth ) * 100;
-	if( low_health_percent > 0 )
+	if( low_health_percent > 10 )
 	{
 		return false;
 	}
