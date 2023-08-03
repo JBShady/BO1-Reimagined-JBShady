@@ -1609,7 +1609,7 @@ blocker_trigger_think()
 					}
 
 
-			self thread replace_chunk( chunk ); // writing out
+			self thread replace_chunk( chunk, has_perk ); // writing out
 
 
 			assert( IsDefined( self.clip ) );
