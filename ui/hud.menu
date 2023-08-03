@@ -287,7 +287,7 @@
 			textscale		TEXTSIZE_DEFAULT
 			textstyle		ITEM_TEXTSTYLE_SHADOWED
 			ownerdraw		CG_HOLD_BREATH_ZOOM_HINT
-			visible			0
+			visible			1
 			decoration
 		}
 	}
@@ -309,7 +309,7 @@
 			textscale		TEXTSIZE_DEFAULT
 			textstyle		ITEM_TEXTSTYLE_SHADOWED
 			ownerdraw		CG_HOLD_BREATH_HINT
-			visible			0
+			visible			1
 			decoration
 		}
 	}
