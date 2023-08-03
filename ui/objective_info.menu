@@ -349,16 +349,12 @@
 		name			"pausedbkgnd"
 		fullScreen		0
 		rect			0 0 640 480
+		focusColor		COLOR_FOCUSED
+		blurWorld		4.8
 		visible 		when( !dvarBool( zombietron ) );
 
-		itemDef
-		{
-			style			WINDOW_STYLE_FILLED
-			rect			0 0 640 480 HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
-			backcolor		0 0 0 0.5 
-			visible			1
-			decoration
-		}
+		#define SINGLE_PLAYER	1
+		#include "ui_mp/ingamebg.inc"
 	}
 
 	menuDef
