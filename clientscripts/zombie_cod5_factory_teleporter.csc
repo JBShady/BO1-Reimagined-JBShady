@@ -19,10 +19,10 @@ setup_teleport_aftereffects()
 	waitforclient( 0 );
 
 	level.teleport_ae_funcs = [];
-	/*if( getlocalplayers().size == 1 )
+	if( getlocalplayers().size == 1 )
 	{
 		level.teleport_ae_funcs[level.teleport_ae_funcs.size] = clientscripts\zombie_cod5_factory_teleporter::teleport_aftereffect_fov;
-	}*/
+	}
 	//level.teleport_ae_funcs[level.teleport_ae_funcs.size] = clientscripts\zombie_cod5_factory_teleporter::teleport_aftereffect_shellshock;
 	//level.teleport_ae_funcs[level.teleport_ae_funcs.size] = clientscripts\zombie_cod5_factory_teleporter::teleport_aftereffect_shellshock_electric;
 	level.teleport_ae_funcs[level.teleport_ae_funcs.size] = clientscripts\zombie_cod5_factory_teleporter::teleport_aftereffect_bw_vision;
@@ -79,17 +79,18 @@ teleport_aftereffect_fov( localClientNum )
 	println( "***FOV Aftereffect***\n" );
 
 	start_fov = 30;
-	end_fov = 65;
+	end_fov = getDvarFloat("cg_fov_settings");
 	duration = 0.5;
 
-	for( i = 0; i < duration; i += 0.017 )
+	for( i = 0; i < duration; i += (duration/(end_fov - start_fov)) )
 	{
 		fov = start_fov + (end_fov - start_fov)*(i/duration);
-		SetClientDvar( "cg_fov", fov );
-		realwait( 0.017 );
+		SetClientDvar( "cg_fov_settings", fov );
+		realwait( (duration/(end_fov - start_fov)) );
 	}
-}
 
+	SetClientDvar( "cg_fov_settings", end_fov );
+}
 teleport_aftereffect_bw_vision( localClientNum )
 {
 	println( "***B&W Aftereffect***\n" );
