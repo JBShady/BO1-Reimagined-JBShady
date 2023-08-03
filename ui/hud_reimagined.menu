@@ -13,7 +13,7 @@
 		name				"enemy_counter"
 		rect				0 0 0 0 HORIZONTAL_ALIGN_USER_LEFT VERTICAL_ALIGN_USER_TOP
 		fullscreen			0
-		visible				when(dvarBool("hud_enemy_counter_on") && dvarBool("hud_enemy_counter_on_game"))
+		visible				when(dvarBool("hud_enemy_counter_on") && dvarBool("hud_enemy_counter_on_game") && !ui_active() )
 
 		itemDef
 		{
@@ -36,7 +36,7 @@
 		name				"timer"
 		rect				0 0 0 0 HORIZONTAL_ALIGN_USER_RIGHT VERTICAL_ALIGN_USER_TOP
 		fullscreen			0
-		visible				when(dvarBool("hud_timer_on") && dvarBool("hud_timer_on_game"))
+		visible				when(dvarBool("hud_timer_on") && dvarBool("hud_timer_on_game") && !ui_active() )
 
 		itemDef
 		{
@@ -143,7 +143,7 @@
 		name				"health_bar"
 		rect				4 -107.5 0 0 HORIZONTAL_ALIGN_USER_LEFT VERTICAL_ALIGN_USER_BOTTOM
 		fullscreen			0
-		visible				when(dvarBool("hud_health_bar_on") && dvarBool("hud_health_bar_on_game"))
+		visible				when(dvarBool("hud_health_bar_on") && dvarBool("hud_health_bar_on_game") && !ui_active() )
 
 		itemDef
 		{
@@ -191,7 +191,7 @@
 		name				"zone_name"
 		rect				0 0 0 0 HORIZONTAL_ALIGN_USER_LEFT VERTICAL_ALIGN_USER_BOTTOM
 		fullscreen			0
-		visible				when(dvarBool("hud_zone_name_on") && dvarBool("hud_zone_name_on_game"))
+		visible				when(dvarBool("hud_zone_name_on") && dvarBool("hud_zone_name_on_game") && !ui_active() )
 
 		#define ZONE_NAME_TEXT_Y -108.5
 
@@ -229,7 +229,7 @@
 		name				"character_names"
 		rect				-163 -93 0 0 HORIZONTAL_ALIGN_USER_RIGHT VERTICAL_ALIGN_USER_BOTTOM
 		fullscreen			0
-		visible				when(dvarBool("hud_character_names_on") && dvarBool("hud_character_names_on_game") && !dvarBool("cl_paused"))
+		visible				when(dvarBool("hud_character_names_on") && dvarBool("hud_character_names_on_game") && !ui_active() )
 
 		itemDef
 		{
@@ -301,7 +301,7 @@
 		name				"mule_wep_indicator"
 		rect				0 0 0 0
 		fullscreen			0
-		visible				when(dvarBool("ui_show_mule_wep_indicator"))
+		visible				when(dvarBool("ui_show_mule_wep_indicator") && !ui_active() )
 
 		itemDef
 		{
