@@ -265,7 +265,7 @@ tesla_do_damage( source_enemy, arc_num, player, upgraded )
 
 		if(upgraded)
 		{
-			time /= 1.5;
+			time /= 1.25;
 		}
 
 		wait time;
@@ -540,19 +540,6 @@ tesla_pvp_thread()
 		{
 			continue;
 		}
-
-		//if ( self == attacker )
-		//{
-			/*damage = int( self.maxhealth * .25 );
-			if ( damage < 25 )
-			{
-				damage = 25;
-			}*/
-
-		//	damage = 75;
-
-		//	self.health -= damage;
-		//}
 
 		self setelectrified( 1.0 );
 		self shellshock( "electrocution", 1.0 );
