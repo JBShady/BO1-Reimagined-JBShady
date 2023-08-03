@@ -1077,7 +1077,7 @@ init_flags()
 	flag_init( "wait_and_revive" );
 	flag_init("instant_revive");
 
-	flag_init("insta_kill_round");
+	//flag_init("insta_kill_round");
 	flag_init("round_restarting");
 }
 
@@ -1544,7 +1544,7 @@ difficulty_init()
 		else
 		{
 			players[p].score = 500;
-			//players[p].score = 10000000;
+			players[p].score = 10000000;
 		}
 		players[p].score_total = players[p].score;
 		players[p].old_score = players[p].score;
@@ -1685,9 +1685,9 @@ onPlayerConnect_clientDvars()
 		"playerPushAmount", "1",
 		"g_deadchat", "1",
 		"cg_friendlyNameFadeOut", "1",
-		"player_backSpeedScale", "1",
-		"player_strafeSpeedScale", "1",
-		"player_sprintStrafeSpeedScale", "1",
+		"player_backSpeedScale", "0.9",
+		"player_strafeSpeedScale", "0.9",
+		"player_sprintStrafeSpeedScale", "0.8",
 		"cg_hudDamageIconTime", "2500" );
 
 	self SetDepthOfField( 0, 0, 512, 4000, 4, 0 );
@@ -1704,47 +1704,11 @@ onPlayerConnect_clientDvars()
 
 	self setClientDvar("cg_mature", "1");
 
-	self setClientDvar("cg_drawFriendlyFireCrosshair", "1");
-
 	// reset dvar that changes when double tap is bought
 	self SetClientDvar("player_burstFireCooldown", .2);
 
-	self SetClientDvar("player_enduranceSpeedScale", 1.1);
-
-	// look up and down 90 degrees
-	// can't set to exactly 90 or else looking completely up or down will cause the player to move in the opposite direction
-	self setClientDvar( "player_view_pitch_up", 89.9999 );
-	self setClientDvar( "player_view_pitch_down", 89.9999 );
-
-	// disable melee lunge
-	self setClientDvar( "aim_automelee_enabled", 0 );
-
-	// disable deadshot aim assist on controllers
-	self setClientDvar( "aim_autoAimRangeScale", 0 );
-
-	// disable names on cosmonaut
-	self SetClientDvar("r_zombieNameAllowDevList", 0);
-	self SetClientDvar("r_zombieNameAllowFriendsList", 0);
-
 	// makes FPS area in corner smaller
 	self SetClientDvar("cg_drawFPSLabels", 0);
-
-	// no cheats
-	self SetClientDvar("sv_cheats", 0);
-
-	// allows shooting while looking at players
-	self SetClientDvar("g_friendlyFireDist", 0);
-
-	// dtp buffs
-	self SetClientDvars("dtp_post_move_pause", 0,
-		"dtp_exhaustion_window", 100,
-		"dtp_startup_delay", 100);
-
-	// set minimum fov (so sniper scopes dont go below this)
-	self SetClientDvar("cg_fovMin", 30);
-
-	// remove hold breath and variable zoom hintstrings when scoped in
-	self SetClientDvar("cg_drawBreathHint", 0);
 
 	self SetClientDvar("hud_enemy_counter_value", "");
 	self SetClientDvar("hud_total_time", "");
@@ -1765,6 +1729,9 @@ onPlayerConnect_clientDvars()
 
 	// ammo on HUD never fades away
 	self SetClientDvar("hud_fade_ammodisplay", 0);
+
+	// more lunging like console
+	self SetClientDvar("aim_automelee_range", 128);
 }
 
 
@@ -2002,15 +1969,11 @@ onPlayerSpawned()
 			self thread [[level.player_too_many_weapons_monitor_func]]();
 		}
 
-		self thread remove_idle_sway();
-
 		self send_message_to_csc("hud_anim_handler", "hud_mule_wep_out");
 
 		//self thread revive_grace_period();
 
 		self.move_speed = 1;
-
-		self SetPerk("specialty_unlimitedsprint");
 
 		if( isdefined( self.initialized ) )
 		{
@@ -4621,7 +4584,7 @@ chalk_one_up(override_round_number)
 		if(round_number >= 163 && round_number % 2 == 1 && 
 			!is_true(flag("dog_round")) && !is_true(flag("thief_round")) && !is_true(flag("monkey_round")) && !is_true(flag("enter_nml")))
 		{
-			flag_set("insta_kill_round");
+			//flag_set("insta_kill_round");
 		}
 	}
 
@@ -4794,7 +4757,7 @@ round_think()
 
 		if(flag("insta_kill_round"))
 		{
-			flag_clear("insta_kill_round");
+			//flag_clear("insta_kill_round");
 		}
 
 		if(level.gamemode != "survival")
@@ -5519,14 +5482,14 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 			return 0;
 		}
 
-		// Turrets - don't damage players
+		// Turrets - don't damage players in special gamemodes, instead do grief damage if applicable
 		if(sMeansOfDeath == "MOD_RIFLE_BULLET" && sWeapon == "zombie_bullet_crouch")
 		{
 			if(level.gamemode != "survival" && eInflictor.owner.vsteam != self.vsteam)
 			{
 				self notify("grief_damage", sWeapon, sMeansOfDeath, eInflictor.owner);
+				return 0;
 			}
-			return 0;
 		}
 	}
 
@@ -5769,7 +5732,7 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 	// when it wasn't. This led to SREs about undefined and int being compared on death (self.lives was never defined on the host). While
 	// adding the check for the solo game flag we found that we would have to create a complex OR inside of the if check below. By breaking
 	// the conditions out in to their own variables we keep the complexity without making it look like a mess.
-	solo_death = ( players.size == 1 && flag( "solo_game" ) && (self.lives == 0 || self.num_perks == 0) ); // there is only one player AND the flag is set AND self.lives equals 0
+	solo_death = ( players.size == 1 && flag( "solo_game" ) && self.lives == 0 ); // there is only one player AND the flag is set AND self.lives equals 0
 	non_solo_death = ( players.size > 1 || ( players.size == 1 && !flag( "solo_game" ) ) ); // the player size is greater than one OR ( players.size equals 1 AND solo flag isn't set )
 
 	if ( (solo_death || non_solo_death) ) // if only one player on their last life or any game that started with more than one player
@@ -5783,7 +5746,7 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 
 	if( count == players.size )
 	{
-		if ( players.size == 1 && flag( "solo_game" ) && self.lives > 0 && self.num_perks > 0 )
+		if ( players.size == 1 && flag( "solo_game" ) && self.lives > 0 )
 		{
 			self thread wait_and_revive();
 			return finalDamage;
@@ -6046,327 +6009,28 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		}
 	}
 
-	// damage for non-shotgun bullet weapons - deals the same amount of damage through walls and multiple zombies
-	// all body shots deal the same damage
-	// neck, head, and healmet shots all deal the same damage
-	if(meansofdeath == "MOD_PISTOL_BULLET" || meansofdeath == "MOD_RIFLE_BULLET")
+	// Death Machine - kills in 4 body shots or 2 headshots
+	if((meansofdeath == "MOD_PISTOL_BULLET" || meansofdeath == "MOD_RIFLE_BULLET") && weapon == "minigun_zm")
 	{
-		switch(weapon)
+		final_damage = 500;
+		if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 		{
-		//REGULAR WEAPONS
-		case "m1911_zm":
-			final_damage = 25;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 2.8;
-			break;
-		case "cz75_zm":
-		case "cz75dw_zm":
-			final_damage = 150;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 3.5;
-			break;
-		case "python_zm":
-			final_damage = 1000;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 1.5;
-			break;
-		case "m14_zm":
-		case "zombie_m1garand":
-			final_damage = 130;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 2.5;
-			break;
-		case "ak74u_zm":
-		case "zombie_thompson":
-			final_damage = 120;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 4;
-			break;
-		case "mpl_zm":
-		case "m16_zm":
-		case "mp5k_zm":
-		case "mp40_zm":
-		case "pm63_zm":
-		case "g11_lps_zm":
-		case "famas_zm":
-		case "ppsh_zm":
-		case "zombie_stg44":
-		case "zombie_type100_smg":
-			final_damage = 100;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 4;
-			break;
-		case "spectre_zm":
-			final_damage = 90;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 4;
-			break;
-		case "aug_acog_mk_acog_zm":
-			final_damage = 140;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 4;
-			break;
-		case "commando_zm":
-		case "galil_zm":
-		case "ak47_zm":
-			final_damage = 150;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 4;
-			break;
-		case "fnfal_zm":
-			final_damage = 160;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 4;
-			break;
-		case "rpk_zm":
-			final_damage = 130;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 3;
-			break;
-		case "hk21_zm":
-			final_damage = 150;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 3;
-			break;
-		case "stoner63_zm":
-			final_damage = 160;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 3;
-			break;
-		case "psg1_zm":
-			final_damage = 500;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 5;
-			break;
-		case "l96a1_zm":
-			final_damage = 1000;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 5;
-			break;
-		//CLASSIC WEAPONS
-		case "zombie_kar98k":
-		case "zombie_type99_rifle":
-		case "zombie_springfield":
-			final_damage = 500;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 2;
-			break;
-		case "zombie_m1carbine":
-			final_damage = 150;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 2;
-			break;
-		case "zombie_gewehr43":
-			final_damage = 130;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 2;
-			break;
-		case "zombie_bar":
-			final_damage = 200;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 2;
-			break;
-		case "kar98k_scoped_zombie":
-			final_damage = 1000;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 4;
-			break;
-		case "zombie_fg42":
-			final_damage = 200;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 1.5;
-			break;
-		//UPGRADED WEAPONS
-		case "cz75_upgraded_zm":
-		case "cz75dw_upgraded_zm":
-			final_damage = 300;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 3.5;
-			break;
-		case "python_upgraded_zm":
-			final_damage = 1500;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 2;
-			break;
-		case "m14_upgraded_zm":
-			final_damage = 400;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 3;
-			break;
-		case "mp40_upgraded_zm":
-			final_damage = 200;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 5;
-			break;
-		case "mp5k_upgraded_zm":
-		case "mpl_upgraded_zm":
-		case "pm63_upgraded_zm":
-			final_damage = 140;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 5;
-			break;
-		case "ppsh_upgraded_zm":
-			final_damage = 150;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 4;
-			break;
-		case "m16_gl_upgraded_zm":
-		case "famas_upgraded_zm":
-			final_damage = 150;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 5;
-			break;
-		case "ak74u_upgraded_zm":
-			final_damage = 190;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 5;
-			break;
-		case "aug_acog_upgraded_zm":
-			final_damage = 200;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 5;
-			break;
-		case "commando_upgraded_zm":
-		case "ak47_ft_upgraded_zm":
-			final_damage = 210;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 5;
-			break;
-		case "galil_upgraded_zm":
-			final_damage = 220;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 5;
-			break;
-		case "spectre_upgraded_zm":
-			final_damage = 130;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 5;
-			break;
-		case "rpk_upgraded_zm":
-			final_damage = 180;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 3;
-			break;
-		case "hk21_upgraded_zm":
-			final_damage = 210;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 3;
-			break;
-		case "stoner63_upgraded_zm":
-			final_damage = 230;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 3;
-			break;
-		case "psg1_upgraded_zm":
-			final_damage = 1000;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 8;
-			break;
-		case "l96a1_upgraded_zm":
-			final_damage = 2000;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 8;
-			break;
-		case "fnfal_upgraded_zm":
-			final_damage = 240;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 5;
-			break;
-		//UPGRADED CLASSIC WEAPONS
-		case "zombie_kar98k_upgraded":
-			final_damage = 3000;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 2;
-			break;
-		case "zombie_gewehr43_upgraded":
-			final_damage = 400;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 3;
-			break;
-		case "zombie_m1carbine_upgraded":
-			final_damage = 300;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 4;
-			break;
-		case "zombie_type100_smg_upgraded":
-			final_damage = 200;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 5.5;
-			break;
-		case "zombie_fg42_upgraded":
-			final_damage = 220;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 1.5;
-			break;
-		case "zombie_stg44_upgraded":
-			final_damage = 150;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 5;
-			break;
-		case "zombie_thompson_upgraded":
-			final_damage = 200;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 5;
-			break;
+			final_damage *= 2;
 		}
 
-		// Death Machine - kills in 4 body shots or 2 headshots
-		if(weapon == "minigun_zm")
+		if(self.animname != "thief_zombie" && self.animname != "director_zombie" && self.animname != "astro_zombie")
 		{
-			final_damage = 500;
+			min_damage = final_damage;
+			final_damage = int(self.maxhealth / 4) + 1;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 			{
 				final_damage *= 2;
 			}
 
-			if(self.animname != "thief_zombie" && self.animname != "director_zombie" && self.animname != "astro_zombie")
+			if(final_damage < min_damage)
 			{
-				min_damage = final_damage;
-				final_damage = int(self.maxhealth / 4) + 1;
-				if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				{
-					final_damage *= 2;
-				}
-
-				if(final_damage < min_damage)
-				{
-					final_damage = min_damage;
-				}
+				final_damage = min_damage;
 			}
-		}
-	}
-
-	//projectile impact damage - all body shots deal the same damage
-	//neck, head, and healmet shots all deal the same damage
-	if(meansofdeath == "MOD_IMPACT")
-	{
-		if(weapon == "crossbow_explosive_zm")
-		{
-			final_damage = 750;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 4;
-		}
-		else if(weapon == "crossbow_explosive_upgraded_zm")
-		{
-			final_damage = 2250;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 4;
-		}
-		else if(weapon == "knife_ballistic_zm" || weapon == "knife_ballistic_bowie_zm" || weapon == "knife_ballistic_sickle_zm")
-		{
-			final_damage = 500;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 4;
-		}
-		else if(weapon == "knife_ballistic_upgraded_zm" || weapon == "knife_ballistic_bowie_upgraded_zm" || weapon == "knife_ballistic_sickle_upgraded_zm")
-		{
-			final_damage = 1000;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 4;
-		}
-		else if(is_lethal_grenade(weapon) || is_tactical_grenade(weapon))
-		{
-			final_damage = 30;
 		}
 	}
 
@@ -6811,8 +6475,7 @@ end_game()
 	wait( 2 );
 
 	intermission();
-	//wait( level.zombie_vars["zombie_intermission_time"] );
-	wait 10;
+	wait( level.zombie_vars["zombie_intermission_time"] );
 
 	level notify( "stop_intermission" );
 	array_thread( get_players(), ::player_exit_level );
@@ -8752,45 +8415,6 @@ revive_grace_period()
 	}
 }
 
-//removes idle sway on sniper scopes
-remove_idle_sway()
-{
-	self endon("death");
-	self endon("disconnect");
-
-	// other weapons are done from weapon file
-	//snipers = array("l96a1_zm", "l96a1_upgraded_zm", "psg1_zm", "psg1_upgraded_zm", "sniper_explosive_zm", "sniper_explosive_upgraded_zm", "kar98k_scoped_zombie");
-	snipers = array("sniper_explosive_zm", "sniper_explosive_upgraded_zm");
-	set = false;
-
-	while(1)
-	{
-		wait_network_frame();
-
-		if(self HasPerk("specialty_deadshot"))
-		{
-			if(set)
-				set = false;
-			continue;
-		}
-
-		wep = self GetCurrentWeapon();
-		is_sniper = is_in_array(snipers, wep);
-		is_ads = isADS(self);
-
-		if(is_sniper && is_ads && !set)
-		{
-			self SetClientFlag(level._ZOMBIE_PLAYER_FLAG_DEADSHOT_PERK);
-			set = true;
-		}
-		else if(( !is_sniper || !is_ads ) && set)
-		{
-			self ClearClientFlag(level._ZOMBIE_PLAYER_FLAG_DEADSHOT_PERK);
-			set = false;
-		}
-	}
-}
-
 disable_character_dialog()
 {
 	flag_wait("all_players_connected");
@@ -8853,6 +8477,36 @@ character_names_hud()
 	flag_wait("all_players_spawned");
 
 	players = get_players();
+
+	color = "1 1 1 1";
+	if(players.size == 1)
+	{
+		switch( self.entity_num ) // Set point color for solo
+		{
+			case 0:
+				// White
+				color = "1 1 1 1";
+				break;
+			case 1:
+				// Blue
+				color = "0.486275 0.811765 0.933333 0";
+				break;
+			case 2:
+				// Yellow
+				color = "0.964706 0.792157 0.313726 0";
+				break;
+			case 3:
+				// Green
+				color = "0.513726 0.92549 0.533333 0";
+				break;
+			default:
+				// White
+				color = "1 1 1 1";
+				break;
+		}
+	}
+	self SetClientDvar( "cg_ScoresColor_Gamertag_0" , color );
+
 	for ( j = 0; j < players.size; j++ )
 	{
 		// Allow custom maps to override this logic
@@ -8860,7 +8514,11 @@ character_names_hud()
 		{
 			name = players[j] [[level._zombiemode_get_player_name_string]](players[j].entity_num);
 		}
-		else if(level.script == "zombie_cod5_prototype" || level.script == "zombie_cod5_asylum")
+		else if(level.script == "zombie_cod5_prototype" )
+		{
+			name = undefined;
+		} 
+		else if( level.script == "zombie_cod5_asylum" )
 		{
 			name = "REIMAGINED_ZOMBIE_COD5_ASYLUM_PLAYER_NAME_" + players[j].entity_num;
 		} 
