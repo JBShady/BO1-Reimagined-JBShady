@@ -256,9 +256,17 @@ player_add_points_kill_bonus( mod, hit_location )
 	{
 		case "head":
 		case "helmet":
+			score = level.zombie_vars["zombie_score_bonus_head"]; 
+			break; 
+	
 		case "neck":
-			score = level.zombie_vars["zombie_score_bonus_head"];
-			break;
+			score = level.zombie_vars["zombie_score_bonus_neck"]; 
+			break; 
+
+		case "torso_upper":
+		case "torso_lower":
+			score = level.zombie_vars["zombie_score_bonus_torso"]; 
+			break; 
 	}
 
 	return score;
@@ -467,11 +475,11 @@ set_player_score_hud( init )
 		}
 	}
 
-	// cap points at 10 million
+/*	// cap points at 10 million
 	if(self.score > 10000000)
 	{
 		self.score = 10000000;
-	}
+	}*/
 
 	if( IsDefined( init ) && init )
 	{
@@ -550,7 +558,7 @@ create_highlight_hud( x, y, value )
 //
 score_highlight( scoring_player, score, value )
 {
-	self endon( "disconnect" );
+	self endon( "disconnect" ); 
 
 	// Location from hud.menu
 	score_x = -103;
@@ -572,7 +580,7 @@ score_highlight( scoring_player, score, value )
 	{
 		players = get_players();
 
-		num = 0;
+		num = 0;		
 		for ( i = 0; i < players.size; i++ )
 		{
 			if ( scoring_player == players[i] )
@@ -588,199 +596,27 @@ score_highlight( scoring_player, score, value )
 		y *= 2;
 	}
 
-	if(value < 1)
-	{
-		y += 5;
-	}
-	else
-	{
-		y -= 5;
-	}
+	time = 0.5; 
+	half_time = time * 0.5; 
 
-	time = 0.5;
-	half_time = time * 0.5;
-	quarter_time = time * 0.25;
-
-	player_num = scoring_player GetEntityNumber();
-
-	if(value < 1)
-	{
-		if(IsDefined(self.negative_points_hud) && IsDefined(self.negative_points_hud[player_num]))
-		{
-			value += self.negative_points_hud_value[player_num];
-			self.negative_points_hud[player_num] Destroy();
-		}
-	}
-	else if(IsDefined(self.positive_points_hud) && IsDefined(self.positive_points_hud[player_num]))
-	{
-		value += self.positive_points_hud_value[player_num];
-		self.positive_points_hud[player_num] Destroy();
-	}
-
-	hud = self create_highlight_hud( x, y, value );
-
-	if( value < 1 )
-	{
-		if(!IsDefined(self.negative_points_hud))
-		{
-			self.negative_points_hud = [];
-		}
-		if(!IsDefined(self.negative_points_hud_value))
-		{
-			self.negative_points_hud_value = [];
-		}
-		self.negative_points_hud[player_num] = hud;
-		self.negative_points_hud_value[player_num] = value;
-	}
-	else
-	{
-		if(!IsDefined(self.positive_points_hud))
-		{
-			self.positive_points_hud = [];
-		}
-		if(!IsDefined(self.positive_points_hud_value))
-		{
-			self.positive_points_hud_value = [];
-		}
-		self.positive_points_hud[player_num] = hud;
-		self.positive_points_hud_value[player_num] = value;
-	}
+	hud = self create_highlight_hud( x, y, value ); 
 
 	// Move the hud
-	hud MoveOverTime( time );
-	hud.x -= 50;
-	if(value < 1)
-	{
-		hud.y += 5;
-	}
-	else
-	{
-		hud.y -= 5;
-	}
+	hud MoveOverTime( time ); 
+	hud.x -= 20 + RandomInt( 40 ); 
+	hud.y -= ( -15 + RandomInt( 30 ) ); 
 
-	wait( half_time );
-
-	if(!IsDefined(hud))
-	{
-		return;
-	}
+	wait( half_time ); 
 
 	// Fade half-way through the move
-	hud FadeOverTime( half_time );
-	hud.alpha = 0;
+	hud FadeOverTime( half_time ); 
+	hud.alpha = 0; 
 
-	wait( half_time );
+	wait( half_time ); 
 
-	if(!IsDefined(hud))
-	{
-		return;
-	}
-
-	hud Destroy();
+	hud Destroy(); 
+	level.hudelem_count--; 
 }
-
-/*
-//OLD
-//
-// Handles the creation/movement/deletion of the moving hud elems
-//
-score_highlight( scoring_player, score, value )
-{
-	self endon( "disconnect" );
-
-	if(!IsDefined(self.highlight_hudelem_count))
-	{
-		self.highlight_hudelem_count = 0; //keeps track of any score streak so the scores go in order
-		self.current_highlight_hudelem_count = 0; //keeps track of current scores on screen to prevent overlapping
-	}
-
-	// Location from hud.menu
-	score_x = -103;
-	score_y = -100;
-
-	if ( self IsSplitscreen() )
-	{
-		score_y = -95;
-	}
-
-	x = score_x;
-
-	// local only splitscreen only displays each player's own score in their own viewport only
-	if( !level.onlineGame && !level.systemLink && IsSplitScreen() )
-	{
-		y = score_y;
-	}
-	else
-	{
-		players = get_players();
-
-		num = 0;
-		for ( i = 0; i < players.size; i++ )
-		{
-			if ( scoring_player == players[i] )
-			{
-				num = players.size - i - 1;
-			}
-		}
-		y = ( num * -20 ) + score_y;
-	}
-
-	if ( self IsSplitscreen() )
-	{
-		y *= 2;
-	}
-
-	time = 0.5;
-	half_time = time * 0.5;
-	quarter_time = time * 0.25;
-
-	while(self.current_highlight_hudelem_count >= 5)
-	{
-		wait_network_frame();
-	}
-
-	self.highlight_hudelem_count++;
-	self.current_highlight_hudelem_count++;
-	self thread minus_after_wait(.05);
-	hud = self create_highlight_hud( x, y, value );
-	current_count = self.highlight_hudelem_count;
-	//x_count = (int(current_count / 6) % 4);
-	y_count = current_count % 5;
-	if(y_count == 0)
-	{
-		y_count = 5;
-	}
-	y_count--;
-
-	// Move the hud
-	hud MoveOverTime( time );
-	//hud.x -= 20 + RandomInt( 40 );
-	//hud.y -= ( -15 + RandomInt( 30 ) );
-	hud.x -= 50;
-	hud.y += ( -20 + (((y_count + 2) % 5) * 10) );
-
-	wait( time - quarter_time );
-
-	// Fade half-way through the move
-	hud FadeOverTime( quarter_time );
-	hud.alpha = 0;
-
-	wait( quarter_time );
-
-	hud Destroy();
-	level.hudelem_count--;
-	if(self.highlight_hudelem_count - current_count == 0)
-	{
-		self.highlight_hudelem_count = 0;
-	}
-}
-
-minus_after_wait(time)
-{
-	wait time;
-	self.current_highlight_hudelem_count--;
-}*/
-
 
 //
 //	Initialize the team point counter
