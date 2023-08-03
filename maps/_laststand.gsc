@@ -716,7 +716,7 @@ revive_do_revive( playerBeingRevived, reviverGun )
 
 	if ( self HasPerk( "specialty_quickrevive" ) )
 	{
-		reviveTime = reviveTime / 1.5;
+		reviveTime = reviveTime / 2;
 	}
 	//else if ( self HasPerk( "specialty_quickrevive_upgrade" ) )
 	//{
